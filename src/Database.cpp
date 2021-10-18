@@ -19,6 +19,8 @@
 #include <fstream>
 #include <string.h>
 
+#include <iostream>
+
 #ifndef SQLITE_DETERMINISTIC
 #define SQLITE_DETERMINISTIC 0x800
 #endif // SQLITE_DETERMINISTIC

@@ -19,11 +19,18 @@ namespace SQLite
 
 
 // Begins the SQLite transaction
-Transaction::Transaction(Database& aDatabase) :
+Transaction::Transaction(Database& aDatabase, bool concurrent) :
     mDatabase(aDatabase),
     mbCommited(false)
 {
-    mDatabase.exec("BEGIN");
+    if (concurrent)
+    {
+        mDatabase.exec("BEGIN");
+    }
+    else
+    {
+        mDatabase.exec("BEGIN CONCURRENT");
+    }
 }
 
 // Safely rollback the transaction if it has not been committed.

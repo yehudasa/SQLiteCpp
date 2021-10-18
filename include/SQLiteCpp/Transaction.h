@@ -50,7 +50,7 @@ public:
      *
      * Exception is thrown in case of error, then the Transaction is NOT initiated.
      */
-    explicit Transaction(Database& aDatabase);
+    explicit Transaction(Database& aDatabase, bool concurrent);
 
     // Transaction is non-copyable
     Transaction(const Transaction&) = delete;
