@@ -20,6 +20,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 message (STATUS "CMake version: ${CMAKE_VERSION}")
 message (STATUS "Project version: ${PROJECT_VERSION}")
 
+# Determine if fmt is built as a subproject (using add_subdirectory)
+# or if it is the master project.
+if (NOT DEFINED SQLITECPP_MASTER_PROJECT)
+  set(SQLITECPP_MASTER_PROJECT OFF)
+  if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(SQLITECPP_MASTER_PROJECT ON)
+  endif ()
+endif ()
+
+option(SQLITECPP_INSTALL "Generate the install target." ${SQLITECPP_MASTER_PROJECT})
+
 option(SQLITECPP_USE_STATIC_RUNTIME "Use MSVC static runtime (default for internal googletest)." ON)
 
 # Define useful variables to handle OS differences:
@@ -305,28 +316,32 @@ target_include_directories(SQLiteCpp
 
 # Allow the library to be installed via "make install" and found with "find_package"
 
-include(GNUInstallDirs)
-install(TARGETS SQLiteCpp
-    EXPORT ${PROJECT_NAME}Targets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    COMPONENT libraries)
-install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT headers FILES_MATCHING REGEX ".*\\.(hpp|h)$")
-install(EXPORT ${PROJECT_NAME}Targets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+option(SQLITECPP_RUN_CPPLINT "Run cpplint.py tool for Google C++ StyleGuide." ON)
 
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-    cmake/${PROJECT_NAME}ConfigVersion.cmake
-    VERSION ${PROJECT_VERSION}
-    COMPATIBILITY AnyNewerVersion)
-configure_package_config_file(
-    cmake/${PROJECT_NAME}Config.cmake.in
-    cmake/${PROJECT_NAME}Config.cmake
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
-install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME}Config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME}ConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+if (SQLITECPP_INSTALL)
+  include(GNUInstallDirs)
+  install(TARGETS SQLiteCpp
+      EXPORT ${PROJECT_NAME}Targets
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      COMPONENT libraries)
+  install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT headers FILES_MATCHING REGEX ".*\\.(hpp|h)$")
+  install(EXPORT ${PROJECT_NAME}Targets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+  include(CMakePackageConfigHelpers)
+  write_basic_package_version_file(
+      cmake/${PROJECT_NAME}ConfigVersion.cmake
+      VERSION ${PROJECT_VERSION}
+      COMPATIBILITY AnyNewerVersion)
+  configure_package_config_file(
+      cmake/${PROJECT_NAME}Config.cmake.in
+      cmake/${PROJECT_NAME}Config.cmake
+      INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+  install(FILES
+      ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME}Config.cmake
+      ${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME}ConfigVersion.cmake
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+endif ()
 
 # Optional additional targets:
 

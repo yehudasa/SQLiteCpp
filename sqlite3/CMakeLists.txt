@@ -53,10 +53,12 @@ endif()
 
 # Allow the library to be installed via "make install" and found with "find_package"
 
-include(GNUInstallDirs)
-install(TARGETS sqlite3
-    EXPORT ${PROJECT_NAME}Targets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    COMPONENT libraries)
-install(FILES sqlite3.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT headers)
+if (SQLITECPP_INSTALL)
+  include(GNUInstallDirs)
+  install(TARGETS sqlite3
+      EXPORT ${PROJECT_NAME}Targets
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      COMPONENT libraries)
+  install(FILES sqlite3.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT headers)
+endif()
